@@ -84,7 +84,7 @@ RSpec.shared_examples "a Celluloid Stack" do
     thread
   end
 
-  let(:actor_system) { Celluloid::ActorSystem.new }
+  let(:actor_system) { Celluloid::Actor::System.new }
 
   let(:threads) { Queue.new }
 
