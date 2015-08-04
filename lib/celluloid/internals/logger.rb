@@ -7,7 +7,7 @@ module Celluloid
         end
 
         def debug(string)
-          Celluloid.logger.debug(decorate(string))
+          Celluloid.logger.debug(decorate(string)) if $CELLULOID_DEBUG
         end
 
         def info(string)
@@ -37,7 +37,7 @@ module Celluloid
 
       # Send a debug message
       def debug(string)
-        Celluloid.logger.debug(string) if Celluloid.logger
+        Celluloid.logger.debug(string) if Celluloid.logger && $CELLULOID_DEBUG
       end
 
       # Send a info message
