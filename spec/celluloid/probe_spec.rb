@@ -105,7 +105,6 @@ RSpec.describe "Probe", actor_system: :global do
       received_named_events = {
         incident_reporter: nil,
         notifications_fanout: nil,
-        group_manager: nil,
         public_services: nil,
       }
 
