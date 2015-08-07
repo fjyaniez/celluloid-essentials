@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.description  = "Notifications, Internals, Logging, Probe, and essential Celluloid pieces demanding Supervision"
   gem.licenses     = ["MIT"]
 
-  gem.authors      = ["Tony Arcieri", "digitalextremist //"]
+  gem.authors      = ["Tony Arcieri", "Donovan Keme"]
   gem.email        = ["tony.arcieri@gmail.com", "code@extremist.digital"]
   gem.homepage     = "https://github.com/celluloid/celluloid-essentials"
 
