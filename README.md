@@ -37,4 +37,5 @@ This gem houses fundamental supporting pieces of `Celluloid` which are not *quit
 ## License
 
 Copyright (c) 2011-2015 Tony Arcieri, Donovan Keme.
+
 Distributed under the MIT License. See [LICENSE.txt](https://github.com/celluloid/celluloid-essentials/blob/master/LICENSE.txt) for further details.
