@@ -7,7 +7,7 @@
 
 This gem houses fundamental supporting pieces of `Celluloid` which are not *quite* `Celluloid` itself.
 
-### Classes:
+## Classes:
 
 * `Celluloid::Probe`
 * `Celluloid::Notifications`
