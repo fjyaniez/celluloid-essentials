@@ -1,6 +1,5 @@
 require_relative "support/env"
 require_relative "support/logging"
-require_relative "support/split_logs"
 require_relative "support/sleep_and_wait"
 require_relative "support/reset_class_variables"
 require_relative "support/crash_checking"
@@ -22,11 +21,12 @@ require "celluloid/test"
 require "celluloid/essentials"
 
 module CelluloidSpecs
-  def self.included_module
-    # Celluloid::IO implements this with with 'Celluloid::IO'
-    Celluloid
+  class << self
+    def included_module
+      # Celluloid::IO implements this with with 'Celluloid::IO'
+      Celluloid
+    end
   end
-
   # Timer accuracy enforced by the tests (50ms)
   TIMER_QUANTUM = 0.05
 end
@@ -48,8 +48,6 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.disable_monkey_patching!
   config.profile_examples = 3
-
-  Specs.configure(config)
 
   config.before(:suite) do
     Specs.stub_out_class_method(Celluloid::Internals::Logger, :crash) do |*args|
@@ -104,7 +102,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.filter_gems_from_backtrace(*%w(rspec-expectations rspec-core rspec-mocks rspec-log_split rubysl-thread rubysl-timeout))
+  config.filter_gems_from_backtrace(*%w(rspec-expectations rspec-core rspec-mocks rubysl-thread rubysl-timeout))
 
   config.mock_with :rspec do |mocks|
     mocks.verify_doubled_constant_names = true

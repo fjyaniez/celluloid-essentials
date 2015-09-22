@@ -4,7 +4,7 @@ require File.expand_path("../culture/sync", __FILE__)
 
 Gem::Specification.new do |gem|
   gem.name         = "celluloid-essentials"
-  gem.version      = "0.20.2.1"
+  gem.version      = "0.20.2.2"
   gem.platform     = Gem::Platform::RUBY
   gem.summary      = "Internally used tools, and superstructural dependencies of Celluloid"
   gem.description  = "Notifications, Internals, Logging, Probe, and essential Celluloid pieces demanding Supervision"
