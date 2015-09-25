@@ -1,91 +1,6 @@
 RSpec.shared_examples "a Celluloid Stack" do
-  # remove warnings in tests
-  unless defined? Wait
-    class Wait
-      QUEUE = Queue.new
-      WAITERS = Queue.new
-      ACTORS = Queue.new
-
-      def self.forever
-        WAITERS << Thread.current
-        QUEUE.pop
-      end
-
-      def self.no_longer
-        Wait::ACTORS.pop.terminate until Wait::ACTORS.empty?
-
-        loop do
-          break if WAITERS.empty?
-          QUEUE << nil
-          nicely_end_thread(WAITERS.pop)
-        end
-      end
-
-      def self.nicely_end_thread(th)
-        return if jruby_fiber?(th)
-
-        status = th.status
-        case status
-        when nil, false, "dead"
-        when "aborting"
-          th.join(2) || STDERR.puts("Thread join timed out...")
-        when "sleep", "run"
-          th.kill
-          th.join(2) || STDERR.puts("Thread join timed out...")
-        else
-          STDERR.puts "unknown status: #{th.status.inspect}"
-        end
-      end
-
-      def self.jruby_fiber?(th)
-        return false unless RUBY_PLATFORM == "java" && (java_th = th.to_java.getNativeThread)
-        /Fiber/ =~ java_th.get_name
-      end
-    end
-  end
-
-  unless defined? BlockingActor
-    class BlockingActor
-      include Celluloid
-
-      def initialize(threads)
-        @threads = threads
-      end
-
-      def blocking
-        Wait::ACTORS << Thread.current
-        @threads << Thread.current
-        Wait.forever
-      end
-    end
-  end
-
-  def create_async_blocking_actor(task_klass)
-    actor_klass = Class.new(BlockingActor) do
-      task_class task_klass
-    end
-
-    actor = actor_system.within do
-      actor_klass.new(threads)
-    end
-
-    actor.async.blocking
-  end
-
-  def create_thread_with_role(threads, role)
-    resume = Queue.new
-    thread = actor_system.get_thread do
-      resume.pop # to avoid race for 'thread' variable
-      thread.role = role
-      threads << thread
-      Wait.forever
-    end
-    resume << nil # to avoid race for 'thread' variable
-    thread
-  end
 
   let(:actor_system) { Celluloid::Actor::System.new }
-
   let(:threads) { Queue.new }
 
   before(:each) do
@@ -102,7 +17,7 @@ RSpec.shared_examples "a Celluloid Stack" do
     @idle_thread = create_thread_with_role(threads, :idle_thing)
     items += 1
 
-    # Wait for each thread to add itself to the queue
+    # StackWaiter for each thread to add itself to the queue
     tmp = Queue.new
     items.times do
       th = Timeout.timeout(4) { threads.pop }
@@ -116,7 +31,7 @@ RSpec.shared_examples "a Celluloid Stack" do
   end
 
   after do
-    Wait.no_longer
+    StackWaiter.no_longer
     actor_system.shutdown
   end
 
@@ -129,6 +44,7 @@ RSpec.shared_examples "a Celluloid Stack" do
   describe "#threads" do
     # TODO: this spec should use mocks because it's non-deterministict
     it "should include threads that are not actors" do
+      # TODO: Assess need for bypassing StackWaiter.forever's QUEUE.pop after #670 & #678
       # NOTE: Pool#each doesn't guarantee to contain the newly started thread
       # because the actor's methods (which create and store the thread handle)
       # are started asynchronously.
@@ -153,7 +69,7 @@ RSpec.shared_examples "a Celluloid Stack" do
 
       # Pool somehow doesn't create extra tasks
       # 5 is on JRuby-head
-      expected = (Celluloid.group_class == Celluloid::Group::Pool) ? [3, 4] : [4, 5, 6]
+      expected = (Celluloid.group_class == Celluloid::Group::Pool) ? [3, 4] : [3, 4, 5, 6]
       expect(expected).to include(subject.threads.size)
     end
 
