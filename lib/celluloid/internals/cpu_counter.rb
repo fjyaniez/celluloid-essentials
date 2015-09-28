@@ -35,12 +35,12 @@ module Celluloid
         end
 
         def from_proc
-          File.read('/proc/cpuinfo').scan(/^processor\s*:/).size if File.exist?('/proc/cpuinfo')
+          File.read("/proc/cpuinfo").scan(/^processor\s*:/).size if File.exist?("/proc/cpuinfo")
         rescue
         end
 
         def from_win32ole
-          require 'win32ole'
+          require "win32ole"
           WIN32OLE.connect("winmgmts://").ExecQuery("select * from Win32_ComputerSystem").NumberOfProcessors
         rescue LoadError
         rescue

@@ -47,7 +47,7 @@ RSpec.describe "Probe", actor_system: :global do
   def wait_for_match(queue, topic, actor1 = nil, actor2 = nil)
     started = Time.now.to_f
     actors = [actor1, actor2]
-    expected = ([topic] + actors.map { |a| addr(a)  }).dup
+    expected = ([topic] + actors.map { |a| addr(a) }).dup
 
     received = []
     last_event_timestamp = nil
@@ -171,7 +171,7 @@ RSpec.describe "Probe", actor_system: :global do
       expect(wait_for_match(queue, "celluloid.events.actor_named", a)).to be
     end
 
-    it "should send a notification when actor dies"  do
+    it "should send a notification when actor dies" do
       Specs.sleep_and_wait_until { Celluloid::Actor[:notifications_fanout].alive? }
 
       TestProbeClient.new(queue)

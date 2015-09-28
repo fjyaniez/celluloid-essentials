@@ -6,7 +6,7 @@ class StackWaiter
   class << self
     def forever
       WAITERS << Thread.current
-      #de QUEUE.pop
+      # de QUEUE.pop
       sleep
     end
 

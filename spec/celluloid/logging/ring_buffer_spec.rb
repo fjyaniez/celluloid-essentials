@@ -31,6 +31,6 @@ RSpec.describe Celluloid::RingBuffer do
   end
 
   it "should be thread-safe" do
-    # TODO how to test?
+    # TODO: how to test?
   end
 end

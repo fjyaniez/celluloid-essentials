@@ -1,5 +1,4 @@
 RSpec.shared_examples "a Celluloid Stack" do
-
   let(:actor_system) { Celluloid::Actor::System.new }
   let(:threads) { Queue.new }
 

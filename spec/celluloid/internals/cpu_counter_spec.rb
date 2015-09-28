@@ -68,23 +68,20 @@ RSpec.describe Celluloid::Internals::CPUCounter do
       subject { described_class.from_java }
 
       xit "not yet tested" do
-
-      end      
+      end
     end
 
     context "with from_proc" do
       subject { described_class.from_proc }
 
       xit "not yet tested" do
-
-      end      
+      end
     end
 
     context "with from_win32ole" do
       subject { described_class.from_win32ole }
 
       xit "not yet tested" do
-
       end
     end
 
@@ -112,7 +109,6 @@ RSpec.describe Celluloid::Internals::CPUCounter do
     end
 
     xit "when all guesses fail" do
-      
     end
 
     context "with from_result" do
