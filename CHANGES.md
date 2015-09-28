@@ -1,3 +1,8 @@
+0.20.5 (2015-09-28)
+-----
+* Revamped test suite, using shared RSpec configuration layer provided by Celluloid itself.
+* Updated gem dependencies provided by Celluloid::Sync... extraneous gems removed, or marked as development dependencies.
+
 0.20.2 (2015-08-07)
 -----
 * `ActorSystem` moved to `Actor::System` in Celluloid; that is reflected here.
