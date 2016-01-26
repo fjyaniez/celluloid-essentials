@@ -20,6 +20,10 @@ RSpec.describe Celluloid::Notifications, actor_system: :global do
     def die(topic = "death")
       publish(topic, "Mr. President")
     end
+
+    def die_in_batches(topic = "death")
+      publish_in_batches(topic, 1, "Mr. President")
+    end
   end
 
   it "notifies relevant subscribers" do
@@ -35,6 +39,21 @@ RSpec.describe Celluloid::Notifications, actor_system: :global do
     expect(marilyn.mourning).to eq("Mr. President")
     expect(jackie.mourning).not_to eq("Mr. President")
   end
+
+  it "notifies relevant subscribers in batches" do
+    marilyn = Admirer.new
+    jackie = Admirer.new
+
+    marilyn.subscribe("death", :someone_died)
+    jackie.subscribe("alive", :someone_died)
+
+    president = President.new
+
+    president.die_in_batches
+    expect(marilyn.mourning).to eq("Mr. President")
+    expect(jackie.mourning).not_to eq("Mr. President")
+  end
+
 
   it "allows multiple subscriptions from the same actor" do
     marilyn = Admirer.new
@@ -58,6 +77,20 @@ RSpec.describe Celluloid::Notifications, actor_system: :global do
     president = President.new
 
     president.die
+    expect(marilyn.mourning).to eq("Mr. President")
+    expect(jackie.mourning).to eq("Mr. President")
+  end
+
+  it "notifies subscribers in batches" do
+    marilyn = Admirer.new
+    jackie = Admirer.new
+
+    marilyn.subscribe("death", :someone_died)
+    jackie.subscribe("death", :someone_died)
+
+    president = President.new
+
+    president.die_in_batches
     expect(marilyn.mourning).to eq("Mr. President")
     expect(jackie.mourning).to eq("Mr. President")
   end

@@ -11,7 +11,15 @@ module Celluloid
       # TODO: needs a tests
     end
 
+    def publish_in_batches(pattern, slice, *args)
+      Celluloid::Notifications.notifier.publish_in_batches(pattern, slice, *args)
+    rescue DeadActorError
+      # Bad shutdown logic. Oh well....
+      # TODO: needs a tests
+    end
+
     module_function :publish
+    module_function :publish_in_batches
 
     def subscribe(pattern, method)
       Celluloid::Notifications.notifier.subscribe(Actor.current, pattern, method)
@@ -48,6 +56,13 @@ module Celluloid
         listeners_for(pattern).each { |s| s.publish(pattern, *args) }
       end
 
+      def publish_in_batches(pattern, slice, *args)
+        listeners_for(pattern).each_slice(slice) do |listeners|
+          futures = listeners.map {|s| s.publish_in_batch(pattern, *args)}
+          futures.map(&:value)
+        end
+      end
+
       def listeners_for(pattern)
         @listeners_for[pattern] ||= @subscribers.select { |s| s.subscribed_to?(pattern) }
       end
@@ -78,6 +93,13 @@ module Celluloid
         # Bad shutdown logic. Oh well....
       end
 
+      def publish_in_batch(pattern, *args)
+        actor.future method, pattern, *args
+      rescue DeadActorError
+        # TODO: needs a tests
+        # Bad shutdown logic. Oh well....
+      end
+
       def subscribed_to?(pattern)
         !pattern || @pattern === pattern.to_s || @pattern === pattern
       end
@@ -91,5 +113,9 @@ module Celluloid
 
   def self.publish(*args)
     Notifications.publish(*args)
+  end
+
+  def self.publish_in_batches(*args)
+    Notifications.publish_in_batches(*args)
   end
 end
